@@ -57,17 +57,20 @@ class VentanaPrincipal:
         ).pack()
         
         # Contenedor principal con notebook
-        notebook = ttk.Notebook(self.root)
-        notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
         # Pestañas
-        frame_productos = ProductosFrame(notebook, self.bd)
-        frame_ventas = VentasFrame(notebook, self.bd)
-        frame_reportes = ReportesFrame(notebook, self.bd)
+        self.frame_productos = ProductosFrame(self.notebook, self.bd)
+        self.frame_ventas = VentasFrame(self.notebook, self.bd)
+        self.frame_reportes = ReportesFrame(self.notebook, self.bd)
         
-        notebook.add(frame_productos, text="Productos")
-        notebook.add(frame_ventas, text="Punto de Venta")
-        notebook.add(frame_reportes, text="Reportes")
+        self.notebook.add(self.frame_productos, text="Productos")
+        self.notebook.add(self.frame_ventas, text="Punto de Venta")
+        self.notebook.add(self.frame_reportes, text="Reportes")
+        
+        # Evento para detectar cambio de pestaña
+        self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_changed)
         
         # Pie de página
         pie = tk.Frame(self.root, bg="#2c3e50", height=50)
@@ -80,6 +83,29 @@ class VentanaPrincipal:
             fg="#95a5a6",
             font=("Arial", 9)
         ).pack(pady=5)
+    
+    def on_tab_changed(self, event):
+        """Se ejecuta cuando cambias de pestaña"""
+        # Obtener el índice de la pestaña seleccionada
+        tab_seleccionada = self.notebook.index(self.notebook.select())
+        
+        # Si cambias a Punto de Venta (índice 1), recargar productos
+        if tab_seleccionada == 1:
+            # Recargar sin mostrar mensaje (silencioso)
+            sql = """
+                SELECT 
+                    p.id,
+                    p.nombre,
+                    c.nombre as categoria,
+                    p.precio_venta,
+                    p.stock
+                FROM productos p
+                JOIN categorias c ON p.categoria_id = c.id
+                WHERE p.activo = TRUE
+                ORDER BY p.nombre
+            """
+            self.frame_ventas.todos_productos = self.bd.ejecutar_consulta(sql) or []
+            self.frame_ventas.actualizar_sugerencias()
     
     def cerrar_aplicacion(self):
         """Cierra la aplicación correctamente"""

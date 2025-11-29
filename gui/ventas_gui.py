@@ -36,6 +36,7 @@ class VentasFrame(ttk.Frame):
         self.entrada_cantidad.insert(0, "1")
         
         ttk.Button(frame_superior, text="➕ Agregar al Carrito", command=self.agregar_carrito).pack(side=tk.LEFT, padx=5)
+        ttk.Button(frame_superior, text="🔄 Recargar", command=self.cargar_todos_productos).pack(side=tk.LEFT, padx=5)
         
         # Frame para mostrar sugerencias
         frame_sugerencias = ttk.LabelFrame(self, text="Productos Disponibles (filtrados)")
@@ -259,7 +260,14 @@ class VentasFrame(ttk.Frame):
         """
         
         self.todos_productos = self.bd.ejecutar_consulta(sql) or []
+        
+        # Limpiar búsqueda para mostrar todos
+        self.entrada_busqueda.delete(0, tk.END)
+        
         self.actualizar_sugerencias()
+        
+        # Mensaje de confirmación
+        messagebox.showinfo("Éxito", f"✅ {len(self.todos_productos)} productos actualizados")
     
     def actualizar_sugerencias(self):
         """Actualiza la tabla de productos según la búsqueda en tiempo real"""
