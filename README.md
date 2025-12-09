@@ -173,7 +173,3 @@ ConexionBD(host, usuario, contraseña, bd)
 - Las búsquedas son en tiempo real y case-insensitive
 
 ---
-
-**Desarrollado para:** Mini Super Las Botargas  
-**Curso:** BII-27 Programación para el Análisis de Datos  
-**Fecha:** Noviembre 2025
